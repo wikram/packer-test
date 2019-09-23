@@ -105,7 +105,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --size Standard_DS2_v2 --generate-ssh-keys'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name Test-Vm-os'
                 }
             }
             else
@@ -116,7 +116,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --size Standard_DS2_v2 --generate-ssh-keys'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --size Standard_DS2_v2 --generate-ssh-keys'
                 }
             }     
         }
