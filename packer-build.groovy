@@ -55,7 +55,7 @@ node(WhichNode)
     {
         print "Build Image"
         withCredentials([azureServicePrincipal('sandbox-packer')]) {
-            //sh ("ssh jenkinspacker@vlmazpacker01 packer build -force -var 'client_secret=${AZURE_CLIENT_ID}'-var-file=/creds.json gui.json  2>&1 | tee .../$Buildjobname_output.log")
+            sh ("packer build -force -var 'client_secret=${AZURE_CLIENT_ID}'-var-file=creds.json packer.json  2>&1 | tee .../$Buildjobname_output.log")
         } 
         sh "pwd"
         sh "ls -l"
