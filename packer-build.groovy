@@ -80,7 +80,7 @@ node(WhichNode)
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
                 sh 'az account set -s $SUBS_ID'
                 //sh 'az resource list'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --size Standard_DS2_v2 --generate-ssh-keys'
                 }
             }
             else
@@ -93,7 +93,7 @@ node(WhichNode)
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
                 sh 'az account set -s $SUBS_ID'
                 //sh 'az resource list'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --size Standard_DS2_v2 --generate-ssh-keys'
                 }
             }
     }
