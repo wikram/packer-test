@@ -25,11 +25,6 @@
                 "image_sku":                            "7-LVM",
                 "image_version":                        "latest",
 
-        "azure_tags": {
-                "datetime":         "{{isotime \"2006-01-02 03:04:05\"}}",
-                "timestamp":        "{{timestamp}}"
-        },
-
                 "vm_size":                                      "Standard_DS2_v2"
         }]
 }
