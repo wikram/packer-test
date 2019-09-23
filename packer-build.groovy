@@ -27,6 +27,7 @@ node(WhichNode)
             sh "rm -f creds.json"
             sh "touch creds.json"
             sh "ls -l creds.json"
+            sh "pwd"
             writeFile file: 'creds.json', text: """{
                     "dst_image_name": "${ImageName}",
                     "resource_group_name": "${Resource_group_name}",
