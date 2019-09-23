@@ -57,7 +57,8 @@ node(WhichNode)
         sh "rm -f packer.json*" 
         sh "wget https://raw.githubusercontent.com/wikram/packer-test/master/packer.json"
         withCredentials([azureServicePrincipal('sandbox-packer')]) {
-            sh """/sbin/packer build -force -var "client_secret=${AZURE_CLIENT_ID}" -var-file=creds.json packer.json  2>&1 | tee packer_output.log"""
+            sh """
+            /sbin/packer build -force -var \"client_secret=${AZURE_CLIENT_ID}\" -var-file=creds.json packer.json  2>&1 | tee packer_output.log"""
         } 
         sh "pwd"
         sh "ls -l"
