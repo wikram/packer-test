@@ -59,6 +59,13 @@ node(WhichNode)
         withCredentials([azureServicePrincipal('sandbox-packer')]) {
             sh (script: "/sbin/packer build -force -var \"client_secret=${AZURE_CLIENT_SECRET}\" -var-file=creds.json packer.json  2>&1 | tee packer_output.log",returnStdout: true)
         } 
+        withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                    subscriptionIdVariable: 'SUBS_ID',
+                                    clientIdVariable: 'CLIENT_ID',
+                                    clientSecretVariable: 'CLIENT_SECRET',
+                                    tenantIdVariable: 'TENANT_ID')]) {
+        sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
+        }
         sh "pwd"
         sh "ls -l"
     }
