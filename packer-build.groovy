@@ -1,11 +1,4 @@
-String ImageRG
-String ImageGalleryName
 Boolean ifGallery
-String SlaveNode
-def file1 = new File('abc.txt')
-String subID
-String cliID
-String azCred
 
 BUILD_DIR = 'build'
 
@@ -81,9 +74,63 @@ node(WhichNode)
         //sh ("ssh jenkinspacker@vlmazpacker01 cat .../$Buildjobname_output.log | mail -s Packer log xxxx@fisglobal.com")
     }
 
-    stage('Check Image')
+    stage('Deploy Image')
+    {
+        print "Checking Image"
+        if (whichEnv == "Prod")
+            {
+               withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                        subscriptionIdVariable: 'SUBS_ID',
+                                        clientIdVariable: 'CLIENT_ID',
+                                        clientSecretVariable: 'CLIENT_SECRET',
+                                        tenantIdVariable: 'TENANT_ID')]) {
+                sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                }
+            }
+            else
+            {
+                withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                        subscriptionIdVariable: 'SUBS_ID',
+                                        clientIdVariable: 'CLIENT_ID',
+                                        clientSecretVariable: 'CLIENT_SECRET',
+                                        tenantIdVariable: 'TENANT_ID')]) {
+                sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                }
+            }
+    }
+
+    stage('Check VM Image')
     {
         print "Checking Image"
         //sh ("ssh jenkinspacker@vlmazpacker01 cat .../$Buildjobname_output.log | mail -s Packer log xxxx@fisglobal.com")
+    }
+
+    stage('Delete Testing VM')
+    {
+        print "Checking Image"
+        if (whichEnv == "Prod")
+            {
+               withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                        subscriptionIdVariable: 'SUBS_ID',
+                                        clientIdVariable: 'CLIENT_ID',
+                                        clientSecretVariable: 'CLIENT_SECRET',
+                                        tenantIdVariable: 'TENANT_ID')]) {
+                sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
+                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                }
+            }
+            else
+            {
+                withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                        subscriptionIdVariable: 'SUBS_ID',
+                                        clientIdVariable: 'CLIENT_ID',
+                                        clientSecretVariable: 'CLIENT_SECRET',
+                                        tenantIdVariable: 'TENANT_ID')]) {
+                sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
+                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                }
+            }
     }
 }
