@@ -13,18 +13,6 @@ String azCred
 
 BUILD_DIR = 'build'
 
-if (whichEnv == "Prod")
-{
-    subID = "bfc181d8-0a2b-483a-95eb-23944b2724f1"
-    cliID = "c2379bcf-c4c5-4acf-836e-84c458dbe40a"
-    azCred = "sandbox-packer"
-}
-else
-{
-    subID = "123"
-    cliID = "456"
-}
-
 node(WhichNode)
 {
     stage('Validate Inputs')
@@ -61,13 +49,28 @@ node(WhichNode)
            // withCredentials([azureServicePrincipal('sandbox-packer')]) {
             //    sh (script: "/sbin/packer build -force -var \"client_secret=${AZURE_CLIENT_SECRET}\" -var-file=creds.json packer.json  2>&1 | tee packer_output.log",returnStdout: true)
             //} 
-            withCredentials([azureServicePrincipal(credentialsId: ${azCred},
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/wikram/packer-test']]])
+            if (whichEnv == "Prod")
+            {
+               withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
                                         subscriptionIdVariable: 'SUBS_ID',
                                         clientIdVariable: 'CLIENT_ID',
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
-            sh '/sbin/packer build -force -var subscription_id=${SUBS_ID} -var client_id=${CLIENT_ID} -var client_secret=${CLIENT_SECRET} -var-file=creds.json packer.json'
+                sh '/sbin/packer build -force -var subscription_id=${SUBS_ID} -var client_id=${CLIENT_ID} -var client_secret=${CLIENT_SECRET} -var-file=creds.json packer.json'
+                }
             }
+            else
+            {
+                withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
+                                        subscriptionIdVariable: 'SUBS_ID',
+                                        clientIdVariable: 'CLIENT_ID',
+                                        clientSecretVariable: 'CLIENT_SECRET',
+                                        tenantIdVariable: 'TENANT_ID')]) {
+                sh '/sbin/packer build -force -var subscription_id=${SUBS_ID} -var client_id=${CLIENT_ID} -var client_secret=${CLIENT_SECRET} -var-file=creds.json packer.json'
+                }
+            }
+            
             sh "pwd"
             sh "ls -l"
         }
