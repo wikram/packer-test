@@ -13,10 +13,8 @@ node(WhichNode)
     {
         dir(BUILD_DIR) 
         {
-            sh "rm -f creds.json"
-            sh "pwd"
-            sh "touch creds.json"
-            sh "ls -l creds.json"
+            sh "rm -f creds.json ; touch creds.json ; ls -l creds.json"
+
             writeFile file: 'creds.json', text: """{
                     "dst_image_name": "${ImageName}",
                     "resource_group_name": "${Resource_group_name}",
@@ -34,11 +32,6 @@ node(WhichNode)
         print "Build Image"
         dir(BUILD_DIR) 
         {
-           // sh "rm -f packer.json*" 
-            //sh "wget https://raw.githubusercontent.com/wikram/packer-test/master/packer.json"
-           // withCredentials([azureServicePrincipal('sandbox-packer')]) {
-            //    sh (script: "/sbin/packer build -force -var \"client_secret=${AZURE_CLIENT_SECRET}\" -var-file=creds.json packer.json  2>&1 | tee packer_output.log",returnStdout: true)
-            //} 
             checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/wikram/packer-test']]])
             if (whichEnv == "Prod")
             {
@@ -85,7 +78,9 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                //sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                sh 'az account set -s $SUBS_ID'
+                sh 'az resource list'
                 }
             }
             else
@@ -96,7 +91,9 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                //sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName}'
+                sh 'az account set -s $SUBS_ID'
+                sh 'az resource list'
                 }
             }
     }
@@ -110,6 +107,7 @@ node(WhichNode)
     stage('Delete Testing VM')
     {
         print "Checking Image"
+        /*
         if (whichEnv == "Prod")
             {
                withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
@@ -118,10 +116,10 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                //sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
                 }
             }
-            else
+        else
             {
                 withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
                                         subscriptionIdVariable: 'SUBS_ID',
@@ -129,8 +127,8 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                //sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
                 }
-            }
+            }*/
     }
 }
