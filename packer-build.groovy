@@ -1,7 +1,3 @@
-import hudson.FilePath;
-import hudson.model.*
-import java.io.*
-
 String ImageRG
 String ImageGalleryName
 Boolean ifGallery
@@ -25,9 +21,9 @@ node(WhichNode)
         dir(BUILD_DIR) 
         {
             sh "rm -f creds.json"
+            sh "pwd"
             sh "touch creds.json"
             sh "ls -l creds.json"
-            sh "pwd"
             writeFile file: 'creds.json', text: """{
                     "dst_image_name": "${ImageName}",
                     "resource_group_name": "${Resource_group_name}",
@@ -45,8 +41,8 @@ node(WhichNode)
         print "Build Image"
         dir(BUILD_DIR) 
         {
-            sh "rm -f packer.json*" 
-            sh "wget https://raw.githubusercontent.com/wikram/packer-test/master/packer.json"
+           // sh "rm -f packer.json*" 
+            //sh "wget https://raw.githubusercontent.com/wikram/packer-test/master/packer.json"
            // withCredentials([azureServicePrincipal('sandbox-packer')]) {
             //    sh (script: "/sbin/packer build -force -var \"client_secret=${AZURE_CLIENT_SECRET}\" -var-file=creds.json packer.json  2>&1 | tee packer_output.log",returnStdout: true)
             //} 
@@ -74,12 +70,20 @@ node(WhichNode)
             
             sh "pwd"
             sh "ls -l"
+            sh "rm -rf *"
+            sh "ls -l"
         }
     }
 
     stage('Send Report')
     {
         print "Send Report"
+        //sh ("ssh jenkinspacker@vlmazpacker01 cat .../$Buildjobname_output.log | mail -s Packer log xxxx@fisglobal.com")
+    }
+
+    stage('Check Image')
+    {
+        print "Checking Image"
         //sh ("ssh jenkinspacker@vlmazpacker01 cat .../$Buildjobname_output.log | mail -s Packer log xxxx@fisglobal.com")
     }
 }
