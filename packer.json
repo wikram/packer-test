@@ -1,0 +1,35 @@
+{
+        "builders": [{
+                "type":                                         "azure-arm",
+
+                "subscription_id":                      "{{user `subscription_id`}}",
+                "client_id":                            "{{user `client_id`}}",
+                "client_secret":                        "{{user `client_secret`}}",
+
+                "build_resource_group_name":"{{user `resource_group_name`}}",
+
+                "managed_image_resource_group_name":"{{user `resource_group_name`}}",
+                "managed_image_name":           "{{user `dst_image_name`}}",
+
+                "virtual_network_name":                        "{{user `vnetname`}}",
+                "virtual_network_resource_group_name" :        "{{user `net_res_grp`}}",
+                "virtual_network_subnet_name":                 "{{user `subnetname`}}",
+
+                "ssh_pty":                                      "true",
+                "ssh_username":                         "{{user `ssh_user`}}",
+                "ssh_password":                         "{{user `ssh_pass`}}",
+
+                "os_type":                                      "Linux",
+                "image_publisher":                      "RedHat",
+                "image_offer":                          "RHEL",
+                "image_sku":                            "7-LVM",
+                "image_version":                        "latest",
+
+        "azure_tags": {
+                "datetime":         "{{isotime \"2006-01-02 03:04:05\"}}",
+                "timestamp":        "{{timestamp}}"
+        },
+
+                "vm_size":                                      "Standard_DS2_v2",
+        }], 
+}
