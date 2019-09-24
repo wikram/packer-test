@@ -143,7 +143,7 @@ node(WhichNode)
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
                 sh 'az vm start --name Test-Vm --no-wait --resource-group ${Resource_group_name}'
-                sh 'az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts "echo $1 $2" --parameters hello world'
+                sh 'az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts "echo \$1 \$2" --parameters hello world'
                 }
             }
             else
@@ -155,7 +155,7 @@ node(WhichNode)
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
                 sh 'az vm start --name Test-Vm --no-wait --resource-group ${Resource_group_name}'
-                sh 'az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts "echo $1 $2" --parameters hello world'
+                sh 'az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts "echo \$1 \$2" --parameters hello world'
                 }
             }   
         }
