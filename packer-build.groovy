@@ -86,7 +86,7 @@ node(WhichNode)
             //sh ("ssh jenkinspacker@vlmazpacker01 cat .../$Buildjobname_output.log | mail -s Packer log xxxx@fisglobal.com")
         }
         catch(Exception e) {
-            autoCanceled = true
+           // autoCanceled = true
             println e
         }
     }
@@ -116,7 +116,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --size Standard_DS2_v2 --generate-ssh-keys'
+                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name Test-Vm-os'
                 }
             }     
         }
@@ -155,7 +155,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name}'
                 }
             }
             else
@@ -166,7 +166,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes'
+                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name}'
                 }
             }
         }
