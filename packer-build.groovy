@@ -121,8 +121,10 @@ node(WhichNode)
             }     
         }
         catch(Exception e) {
-            autoCanceled = true
             println e
+            autoCanceled = true
+            println "Job failed in Deploy Image Stage"
+            sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
         }
     }
 
@@ -161,7 +163,9 @@ node(WhichNode)
         }
         catch(Exception e) {
            autoCanceled = true
-           println e 
+           println e
+           println "Job failed in Check VM Image Stage"
+            sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
         }
     }
 
