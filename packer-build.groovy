@@ -31,8 +31,8 @@ node(WhichNode)
             catch(Exception e) {
                 autoCanceled = true
                 println e
-            }
-            
+                currentBuild.result = 'Error'
+            }       
         }
     }
 
@@ -65,15 +65,13 @@ node(WhichNode)
                     sh '/sbin/packer build -force -var subscription_id=${SUBS_ID} -var client_id=${CLIENT_ID} -var client_secret=${CLIENT_SECRET} -var-file=creds.json packer.json'
                     }
                 }
-
                 sh "rm -rf *"
             }
             catch(Exception e) {
                 autoCanceled = true
                 println e
+                currentBuild.result = 'Error'
             }
-            
-            
         }
     }
 
@@ -121,6 +119,7 @@ node(WhichNode)
             }     
         }
         catch(Exception e) {
+            currentBuild.result = 'Error'
             println e
             autoCanceled = true
             println "Job failed in Deploy Image Stage"
@@ -162,10 +161,11 @@ node(WhichNode)
             }   
         }
         catch(Exception e) {
+           currentBuild.result = 'Error'
            autoCanceled = true
            println e
            println "Job failed in Check VM Image Stage"
-            sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
+           sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
         }
     }
 
