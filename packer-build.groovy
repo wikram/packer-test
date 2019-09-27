@@ -1,5 +1,6 @@
 Boolean ifGallery
 def autoCanceled = false
+String TestVM = "test-switch"
 
 BUILD_DIR = 'build'
 
@@ -7,7 +8,46 @@ node(WhichNode)
 {
     stage('Validate Inputs')
     {
-        print "Validate Inputs"
+        if (ImageName == "" || ImageName == null || ImageName.isEmpty()){
+            println "Please specify the name of the image that you want to create."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (Resource_group_name == "" || Resource_group_name == null || Resource_group_name.isEmpty()){
+            println "Please specify the resource group where you want to create the image."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (Net_res_grp == "" || Net_res_grp == null || Net_res_grp.isEmpty()){
+            println "Please specify the resource group where you want to create the image."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (Vnetname == "" || Vnetname == null || Vnetname.isEmpty()){
+            println "Please specify the virtual network that you want to use to create the image."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (Subnetname == "" || Subnetname == null || Subnetname.isEmpty()){
+            println "Please specify the Subnet that you want to use to create the image."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (whichEnv == "" || whichEnv == null || whichEnv.isEmpty()){
+            println "Please specify the environment for which you need to create the image."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (WhichNode == "" || WhichNode == null || WhichNode.isEmpty()){
+            println "Please specify the slave that should run the packer build."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
+        if (MailID == "" || MailID == null || MailID.isEmpty() || !MailID.toLowerCase().endsWith("@fisglobal.com")){
+            println "Please specify a FIS email id to Send report to."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
     }
 
     if (autoCanceled){return}
@@ -67,6 +107,7 @@ node(WhichNode)
                 sh "rm -rf *"
             }
             catch(Exception e) {
+                sh 'az vm delete -g ${Resource_group_name} -n pkr* --yes ; az network nic delete -g ${Resource_group_name} -n pkr*; az disk delete --name pkr* --resource-group ${Resource_group_name} --yes ; az disk delete --name datadisk-1 --resource-group ${Resource_group_name} --yes'
                 autoCanceled = true
                 println e
                 currentBuild.result = 'Error'
@@ -102,7 +143,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name Test-Vm-os'
+                sh 'az vm create -g ${Resource_group_name} -n ${TestVM} --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name ${TestVM}-os --vnet-name ${Vnetname} --subnet ${Subnetname}'
                 }
             }
             else
@@ -113,7 +154,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm create -g ${Resource_group_name} -n Test-Vm --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name Test-Vm-os'
+                sh 'az vm create -g ${Resource_group_name} -n ${TestVM} --image ${ImageName} --nsg "" --public-ip-address "" --authentication-type password --size Standard_DS2_v2 --admin-username testadmin --admin-password "Password1234!" --os-disk-name ${TestVM}-os --vnet-name ${Vnetname} --subnet ${Subnetname}'
                 }
             }     
         }
@@ -122,7 +163,7 @@ node(WhichNode)
             println e
             autoCanceled = true
             println "Job failed in Deploy Image Stage"
-            sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
+            sh 'az vm delete -g ${Resource_group_name} -n ${TestVM} --yes ; az network nic delete -g ${Resource_group_name} -n ${TestVM}VMNic; az disk delete --name ${TestVM}* --resource-group ${Resource_group_name} --yes'
         }
     }
 
@@ -142,8 +183,8 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm start --name Test-Vm --no-wait --resource-group ${Resource_group_name}'
-                sh "az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts 'echo \$1 \$2' --parameters hello world"
+                sh 'az vm start --name ${TestVM} --no-wait --resource-group ${Resource_group_name}'
+                sh "az vm run-command invoke -g ${Resource_group_name} -n ${TestVM} --command-id RunShellScript --scripts 'echo \$1 \$2' --parameters hello world"
                 }
             }
             else
@@ -154,8 +195,8 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm start --name Test-Vm --no-wait --resource-group ${Resource_group_name}'
-                sh "az vm run-command invoke -g ${Resource_group_name} -n Test-Vm --command-id RunShellScript --scripts 'echo \$1 \$2' --parameters hello world"
+                sh 'az vm start --name ${TestVM} --no-wait --resource-group ${Resource_group_name}'
+                sh "az vm run-command invoke -g ${Resource_group_name} -n ${TestVM} --command-id RunShellScript --scripts 'echo \$1 \$2' --parameters hello world"
                 }
             }
         }
@@ -164,7 +205,7 @@ node(WhichNode)
            autoCanceled = true
            println e
            println "Job failed in Check VM Image Stage"
-           sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
+           sh 'az vm delete -g ${Resource_group_name} -n ${TestVM} --yes ; az network nic delete -g ${Resource_group_name} -n ${TestVM}VMNic; az disk delete --name ${TestVM}* --resource-group ${Resource_group_name} --yes'
         }
     }
 
@@ -182,7 +223,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
+                sh 'az vm delete -g ${Resource_group_name} -n ${TestVM} --yes ; az network nic delete -g ${Resource_group_name} -n ${TestVM}VMNic; az disk delete --name ${TestVM}* --resource-group ${Resource_group_name} --yes'
                 }
             }
             else
@@ -193,7 +234,7 @@ node(WhichNode)
                                         clientSecretVariable: 'CLIENT_SECRET',
                                         tenantIdVariable: 'TENANT_ID')]) {
                 sh 'az login --service-principal -u $CLIENT_ID -p $CLIENT_SECRET -t $TENANT_ID ; az account set -s $SUBS_ID'
-                sh 'az vm delete -g ${Resource_group_name} -n Test-Vm --yes ; az network nic delete -g ${Resource_group_name} -n Test-VmVMNic; az disk delete --name Test-Vm* --resource-group ${Resource_group_name} --yes'
+                sh 'az vm delete -g ${Resource_group_name} -n ${TestVM} --yes ; az network nic delete -g ${Resource_group_name} -n ${TestVM}VMNic; az disk delete --name ${TestVM}* --resource-group ${Resource_group_name} --yes'
                 }
             }
         }
