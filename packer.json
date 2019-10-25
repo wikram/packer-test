@@ -32,7 +32,7 @@
          "provisioners": [
                 {
                         "type":                         "file",
-                        "source":                       "gui/gui-postscript.sh",
+                        "source":                       "gui//gui-lvm-config.sh",
                         "destination":          "/tmp/gui-lvm-config.sh"
                 },
                 {
