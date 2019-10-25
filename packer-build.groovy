@@ -48,7 +48,7 @@ node(WhichNode)
             currentBuild.result = 'Error'
             autoCanceled = true
         }
-        if (whichEnv == "Non-Prod" && Resource_group_name && Net_res_grp && Vnetname && Subnetname ==){
+        if (whichEnv == "Non-Prod"){
             println "All parameters correct."
         }
         else if (whichEnv == "Prod") {
