@@ -33,7 +33,7 @@
                 {
                         "type":                         "file",
                         "source":                       "gui/gui-postscript.sh",
-                        "destination":          "/tmp/gui-postscript.sh"
+                        "destination":          "/tmp/gui-lvm-config.sh"
                 },
                 {
                         "type":                         "shell",
