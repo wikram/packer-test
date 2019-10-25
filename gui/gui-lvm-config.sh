@@ -127,3 +127,6 @@ mkdir /ist-shared
 
 yum update -y
 yum upgrade -y
+
+#===================================
+sleep 20m
