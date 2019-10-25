@@ -25,6 +25,23 @@
                 "image_sku":                            "7-LVM",
                 "image_version":                        "latest",
 
-                "vm_size":                                      "Standard_DS2_v2"
-        }]
+                "vm_size":                                      "Standard_DS2_v2",
+                "disk_additional_size":     "200"
+        }],
+        
+         "provisioners": [
+                {
+                        "type":                         "file",
+                        "source":                       "gui/gui-postscript.sh",
+                        "destination":          "/tmp/gui-postscript.sh"
+                },
+                {
+                        "type":                         "shell",
+                        "execute_command":      "echo '{{user `ssh_pass`}}' | {{ .Vars }} sudo -S -E sh -e '{{ .Path }}'",
+                        "inline":
+                        [
+                                "/bin/bash /tmp/gui-lvm-config.sh"
+                        ]
+                }
+        ]
 }
