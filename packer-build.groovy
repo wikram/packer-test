@@ -48,6 +48,18 @@ node(WhichNode)
             currentBuild.result = 'Error'
             autoCanceled = true
         }
+        if (whichEnv == "Non-Prod" && Resource_group_name && Net_res_grp && Vnetname && Subnetname ==){
+            println "All parameters correct."
+        }
+        else if (whichEnv == "Prod") {
+            println "Producton pipeline not setup yet."
+            autoCanceled = true
+        }
+        else{
+            println "Please specify a FIS email id to Send report to."
+            currentBuild.result = 'Error'
+            autoCanceled = true
+        }
     }
 
     if (autoCanceled){return}
@@ -84,8 +96,10 @@ node(WhichNode)
         {
             try {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/wikram/packer-test']]])
+                sh 'ls -l'
                 if (whichEnv == "Prod")
                 {
+
                    withCredentials([azureServicePrincipal(credentialsId: 'sandbox-packer',
                                             subscriptionIdVariable: 'SUBS_ID',
                                             clientIdVariable: 'CLIENT_ID',
