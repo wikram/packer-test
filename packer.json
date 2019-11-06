@@ -6,7 +6,7 @@
                 "client_id":                            "{{user `client_id`}}",
                 "client_secret":                        "{{user `client_secret`}}",
 
-                "build_resource_group_name":"{{user `resource_group_name`}}",
+                "temp_resource_group_name": "rg-PackerBuild-Prod-1",
 
                 "managed_image_resource_group_name":"{{user `resource_group_name`}}",
                 "managed_image_name":           "{{user `dst_image_name`}}",
